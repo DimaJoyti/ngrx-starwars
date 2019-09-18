@@ -1,0 +1,24 @@
+<mat-progress-bar *ngIf="!(characters | async)" mode="indeterminate"></mat-progress-bar>
+<div class="sw-characters-list">
+  <sw-character-search (onFilter)="setFilter($event)"></sw-character-search>
+
+  <mat-card class="sw-card" *ngIf="(characters | async)">
+    <mat-list role="list">
+      <a mat-list-item class="mat-list-option"
+        *ngFor="let character of (characters | async | films: filter.films |species: filter.species | birthYear: filter.minYear:filter.maxYear)"
+        role="listitem" (click)="goToCharacter(character)">
+        <mat-icon mat-list-icon>face</mat-icon>
+        <h4 mat-line>{{character.name}}</h4>
+      </a>
+    </mat-list>
+  </mat-card>
+  <div class="loader__bg" *ngIf="isLoading$ | async">
+    <mat-spinner class="loader" color="primary" mode="indeterminate" [diameter]="40" [value]="25"></mat-spinner>
+  </div>
+
+  <section class="full-width pager">
+    <button mat-raised-button color="primary" [class.invisible]="isFirst$ | async" (click)="prev()">PREVIOUS</button>
+
+    <button mat-raised-button color="primary" [class.invisible]="isLast$ | async" (click)="next()">NEXT</button>
+  </section>
+</div>
