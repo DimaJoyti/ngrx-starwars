@@ -31,13 +31,13 @@ export class CharacterListComponent implements OnInit {
   isLoading$: Observable<boolean>;
 
   constructor(
-    // private characterService: CharacterService,
+    private characterService: CharacterService,
     private store: Store<State>,
     private router: Router
   ) {}
 
   ngOnInit() {
-    // this.characters = this.characterService.getCharacters();
+    this.characters = this.characterService.getCharacters();
     this.characters = this.store.select(getCharacters);
     this.isFirst$ = this.store.select(getIsFirstPage);
     this.isLast$ = this.store.select(getIsLastPage);

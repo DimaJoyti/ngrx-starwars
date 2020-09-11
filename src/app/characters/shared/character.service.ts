@@ -1,7 +1,7 @@
 import {
   throwError as observableThrowError,
   of as observableOf,
-  Observable
+  Observable,
 } from 'rxjs';
 
 import {
@@ -9,7 +9,7 @@ import {
   publishReplay,
   map,
   catchError,
-  concatMap
+  concatMap,
 } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -23,19 +23,18 @@ import { Store } from '@ngrx/store';
 import { FilmState } from '../store/films/films.state';
 import * as FilmActions from '../store/films/films.actions';
 
-
 const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CharacterService {
-  private charactersUrl = 'https://swapi.co/api/people/';
-  private filmsUrl = 'https://swapi.co/api/films/';
-  private speciesUrl = 'https://swapi.co/api/species/';
-  private starshipsUrl = 'https://swapi.co/api/starships/';
+  private charactersUrl = 'https://swapi.dev/api/people/';
+  private filmsUrl = 'https://swapi.dev/api/films/';
+  private speciesUrl = 'https://swapi.dev/api/species/';
+  private starshipsUrl = 'https://swapi.dev/api/starships/';
 
   private characters: Observable<Character[]>;
   private films: Observable<Film[]>;
@@ -52,12 +51,12 @@ export class CharacterService {
     private notifyService: NotifyService
   ) {
     this.films$ = this.store;
-    this.films$.subscribe(data => {
+    this.films$.subscribe((data) => {
       this.films_content = data.film;
     });
     this.store.dispatch(new FilmActions.GetFilmsAction());
     this.characters = this.getDomainObjects(this.charactersUrl);
-    //this.films = this.getDomainObjects(this.filmsUrl);
+    this.films = this.getDomainObjects(this.filmsUrl);
     this.species = this.getDomainObjects(this.speciesUrl);
     this.starships = this.getDomainObjects(this.starshipsUrl);
   }
@@ -164,10 +163,7 @@ export class CharacterService {
    * @returns {Observable<T[]>}
    */
   private getDomainObjects<T>(url: string): Observable<T[]> {
-    return this.getApiPage<T>(url).pipe(
-      publishReplay(1),
-      refCount()
-    );
+    return this.getApiPage<T>(url).pipe(publishReplay(1), refCount());
   }
 
   /**
@@ -179,10 +175,13 @@ export class CharacterService {
     return this.httpClient
       .get<CharactersResponse<Characters>>(url, httpOptions)
       .pipe(
-        concatMap(pageResponse => {
+        concatMap((pageResponse) => {
           if (pageResponse.next) {
             return this.getApiPage(pageResponse.next).pipe(
-              map(resultsToJoin => [...pageResponse.results, ...resultsToJoin])
+              map((resultsToJoin) => [
+                ...pageResponse.results,
+                ...resultsToJoin,
+              ])
             );
           } else {
             return observableOf(pageResponse.results);

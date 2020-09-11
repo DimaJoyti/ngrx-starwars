@@ -15,11 +15,12 @@ export class FilmEffects {
   @Effect() getFilms$: Observable<Action> = this.actions$.pipe(
     ofType(filmActions.GET_FILMS),
     switchMap(() => {
-      return this.http.get('https://swapi.co/api/films').pipe(
+      return this.http.get('https://swapi.dev/api/films').pipe(
         map(
-          data => new filmActions.GetFilmsSuccessAction({ films_content: data })
+          (data) =>
+            new filmActions.GetFilmsSuccessAction({ films_content: data })
         ),
-        catchError(error => of(new filmActions.GetFilmsFailureAction(error)))
+        catchError((error) => of(new filmActions.GetFilmsFailureAction(error)))
       );
     })
   );
