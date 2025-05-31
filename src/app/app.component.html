@@ -83,6 +83,20 @@
         <mat-divider></mat-divider>
 
         <h3 mat-subheader class="sw-nav-header">
+          <mat-icon>games</mat-icon>
+          Galaxy Game
+        </h3>
+
+        <a mat-list-item [routerLink]="['/game']" routerLinkActive="active"
+           (click)="mobileQuery.matches && sidenav.close()">
+          <mat-icon matListItemIcon>sports_esports</mat-icon>
+          <span matListItemTitle>Star Wars Game</span>
+          <span matListItemLine>Quiz, battles & exploration</span>
+        </a>
+
+        <mat-divider></mat-divider>
+
+        <h3 mat-subheader class="sw-nav-header">
           <mat-icon>info</mat-icon>
           Information
         </h3>

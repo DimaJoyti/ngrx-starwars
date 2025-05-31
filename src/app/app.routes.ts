@@ -26,6 +26,10 @@ export const routes: Routes = [
     loadComponent: () => import('./starships/starship-list/starship-list.component').then(m => m.StarshipListComponent)
   },
   {
+    path: 'game',
+    loadChildren: () => import('./game/game.routes').then(m => m.gameRoutes)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

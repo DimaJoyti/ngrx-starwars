@@ -1,0 +1,238 @@
+.quiz-game-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.game-setup-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.loading-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.progress-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.question-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// Кнопки категорій
+.category-button {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid #e2e8f0;
+  color: #4a5568;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #3182ce;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &.selected {
+    background: linear-gradient(135deg, #3182ce, #2c5aa0);
+    border-color: #2c5aa0;
+    color: white;
+    box-shadow: 0 4px 16px rgba(49, 130, 206, 0.4);
+  }
+}
+
+// Кнопки складності
+.difficulty-button {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid #e2e8f0;
+  color: #4a5568;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #3182ce;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &.selected {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    border-color: #38a169;
+    color: white;
+    box-shadow: 0 4px 16px rgba(72, 187, 120, 0.4);
+  }
+}
+
+// Кнопки відповідей
+.answer-button {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #e2e8f0;
+  color: #2d3748;
+  transition: all 0.2s ease;
+  text-align: left;
+
+  &:hover:not(:disabled) {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+.answer-correct {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  border-color: #059669 !important;
+  color: white !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+.answer-wrong {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  border-color: #dc2626 !important;
+  color: white !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4) !important;
+}
+
+.answer-disabled {
+  background: rgba(156, 163, 175, 0.3) !important;
+  border-color: #d1d5db !important;
+  color: #6b7280 !important;
+  opacity: 0.6;
+}
+
+// Анімації
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+// Responsive дизайн
+@media (max-width: 768px) {
+  .quiz-game-container {
+    padding: 10px;
+  }
+
+  .category-button,
+  .difficulty-button {
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+
+  .answer-button {
+    padding: 16px 12px;
+    font-size: 14px;
+  }
+
+  .question-card .mat-card-content h2 {
+    font-size: 18px;
+  }
+}
+
+// Кастомні стилі для Material компонентів
+::ng-deep {
+  .mat-progress-bar-fill::after {
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  }
+
+  .mat-progress-bar.mat-warn .mat-progress-bar-fill::after {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+  }
+
+  .mat-chip.mat-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+  }
+
+  .mat-chip.mat-accent {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+  }
+
+  .mat-chip.mat-warn {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+  }
+
+  .mat-raised-button.mat-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+    
+    &:hover {
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+    }
+  }
+}
+
+// Спеціальні ефекти
+.hover\:scale-102:hover {
+  transform: scale(1.02);
+}
+
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+}
+
+// Градієнтні фони для різних станів
+.bg-success-gradient {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.bg-error-gradient {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.bg-warning-gradient {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.bg-info-gradient {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}

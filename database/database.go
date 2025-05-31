@@ -52,6 +52,8 @@ func seedData() {
 
 	if count > 0 {
 		log.Println("Database already contains data, skipping seed")
+		// Але завжди перевіряємо та додаємо питання для вікторини
+		SeedQuizQuestions()
 		return
 	}
 
@@ -1054,4 +1056,7 @@ func seedData() {
 	}
 
 	log.Println("Database seeded successfully")
+
+	// Seed quiz questions
+	SeedQuizQuestions()
 }

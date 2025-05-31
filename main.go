@@ -57,6 +57,33 @@ func main() {
 
 		// Weapons endpoints
 		v1.GET("/weapons", handlers.GetWeapons)
+
+		// Game endpoints
+		game := v1.Group("/game")
+		{
+			// Player endpoints
+			game.POST("/player/create", handlers.CreatePlayer)
+			game.GET("/player/:id", handlers.GetPlayerProfile)
+			game.PUT("/player/:id", handlers.UpdatePlayerProfile)
+			game.GET("/player/:id/stats", handlers.GetPlayerStats)
+			game.POST("/player/:id/experience", handlers.AddExperience)
+			game.POST("/player/:id/credits", handlers.AddCredits)
+
+			// Game session endpoints
+			game.POST("/session/create", handlers.CreateGameSession)
+			game.PUT("/session/:id/complete", handlers.CompleteGameSession)
+
+			// Quiz endpoints
+			quiz := game.Group("/quiz")
+			{
+				quiz.GET("/questions", handlers.GetQuizQuestions)
+				quiz.GET("/categories", handlers.GetQuizCategories)
+				quiz.POST("/session/create", handlers.CreateQuizSession)
+				quiz.POST("/session/:sessionId/answer", handlers.SubmitQuizAnswer)
+				quiz.PUT("/session/:sessionId/complete", handlers.CompleteQuizSession)
+				quiz.GET("/leaderboard", handlers.GetQuizLeaderboard)
+			}
+		}
 	}
 
 	// Legacy API routes (for backward compatibility)
