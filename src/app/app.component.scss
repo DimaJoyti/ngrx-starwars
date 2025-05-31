@@ -1,3 +1,4 @@
+/* Star Wars App Container */
 .sw-container {
   display: flex;
   flex-direction: column;
@@ -6,27 +7,301 @@
   bottom: 0;
   left: 0;
   right: 0;
+  background: var(--sw-gradient-space);
+  min-height: 100vh;
+}
+
+/* Star Wars Toolbar */
+.sw-toolbar {
+  background: var(--sw-gradient-card) !important;
+  border-bottom: 2px solid var(--sw-primary);
+  box-shadow: var(--sw-shadow-lg);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 10;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 232, 31, 0.1) 50%,
+      transparent 100%);
+    pointer-events: none;
+  }
 }
 
 .sw-is-mobile .sw-toolbar {
   position: fixed;
-  /* Make sure the toolbar will stay on top of the content as it scrolls past. */
-  z-index: 2;
+  z-index: 1000;
+}
+
+/* Logo Container */
+.sw-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 16px;
+
+  .sw-title {
+    margin: 0;
+    font-size: 1.8rem;
+    line-height: 1;
+    letter-spacing: 2px;
+    background: var(--sw-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 8px rgba(255, 232, 31, 0.5));
+  }
+
+  .sw-subtitle {
+    font-size: 0.7rem;
+    color: var(--sw-text-secondary);
+    margin-top: -2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+}
+
+/* Toolbar Buttons */
+.sw-home-btn,
+.sw-api-link,
+.sw-github-link {
+  transition: all 0.3s ease;
+  border-radius: 50%;
+
+  &:hover {
+    background: rgba(255, 232, 31, 0.1);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 232, 31, 0.3);
+  }
+
+  mat-icon {
+    color: var(--sw-primary);
+  }
 }
 
 .sw-sidenav-container {
-  /* When the sidenav is not fixed, stretch the sidenav container to fill the available space. This
-     causes `<mat-sidenav-content>` to act as our scrolling element for desktop layouts. */
   flex: 1;
+  background: transparent;
 }
 
 .sw-is-mobile .sw-sidenav-container {
-  /* When the sidenav is fixed, don't constrain the height of the sidenav container. This allows the
-     `<body>` to be our scrolling element for mobile layouts. */
   flex: 1 0 auto;
 }
 
+/* Main Content */
+.sw-main-content {
+  min-height: calc(100vh - 120px);
+  padding-bottom: 80px;
+  background: transparent;
+}
 
 .sw-toolbar-spacer {
   flex: 1 1 auto;
+}
+
+/* Star Wars Footer */
+.sw-footer {
+  background: var(--sw-gradient-card);
+  border-top: 1px solid rgba(255, 232, 31, 0.2);
+  padding: 20px 0;
+  margin-top: auto;
+  backdrop-filter: blur(10px);
+}
+
+.sw-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 16px;
+}
+
+.sw-footer-text {
+  color: var(--sw-text-primary);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.9rem;
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.sw-footer-credits {
+  color: var(--sw-text-secondary);
+  font-size: 0.8rem;
+  margin: 0 0 8px 0;
+
+  a {
+    color: var(--sw-primary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: var(--sw-primary-dark);
+      text-shadow: 0 0 5px rgba(255, 232, 31, 0.5);
+    }
+  }
+}
+
+.sw-footer-stats {
+  color: var(--sw-text-secondary);
+  font-size: 0.75rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--sw-primary);
+  }
+}
+
+/* Navigation Sidebar */
+.sw-sidenav {
+  width: 280px;
+  background: var(--sw-gradient-card);
+  border-right: 2px solid var(--sw-primary);
+  backdrop-filter: blur(10px);
+}
+
+.sw-nav-list {
+  padding: 16px 0;
+
+  .sw-nav-header {
+    color: var(--sw-primary) !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 16px 8px 16px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  a[mat-list-item] {
+    color: var(--sw-text-primary);
+    transition: all 0.3s ease;
+    margin: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+
+    &:hover {
+      background: rgba(255, 232, 31, 0.1);
+      border-color: rgba(255, 232, 31, 0.3);
+      transform: translateX(4px);
+    }
+
+    &.active {
+      background: var(--sw-gradient-primary);
+      color: var(--sw-background);
+      border-color: var(--sw-primary);
+      box-shadow: 0 4px 12px rgba(255, 232, 31, 0.3);
+
+      mat-icon {
+        color: var(--sw-background);
+      }
+
+      [matListItemTitle] {
+        font-weight: 600;
+      }
+    }
+
+    mat-icon {
+      color: var(--sw-primary);
+      transition: color 0.3s ease;
+    }
+
+    [matListItemTitle] {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    [matListItemLine] {
+      color: var(--sw-text-secondary);
+      font-size: 0.8rem;
+    }
+  }
+
+  mat-divider {
+    border-color: rgba(255, 232, 31, 0.2);
+    margin: 16px 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sw-logo-container {
+    margin-left: 8px;
+
+    .sw-title {
+      font-size: 1.4rem;
+    }
+
+    .sw-subtitle {
+      font-size: 0.6rem;
+    }
+  }
+
+  .sw-sidenav {
+    width: 260px;
+  }
+
+  .sw-footer {
+    padding: 16px 0;
+  }
+
+  .sw-footer-text,
+  .sw-footer-credits {
+    font-size: 0.8rem;
+  }
+
+  .sw-footer-stats {
+    font-size: 0.7rem;
+    gap: 6px;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .sw-logo-container {
+    .sw-title {
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .sw-subtitle {
+      display: none;
+    }
+  }
+
+  .sw-sidenav {
+    width: 240px;
+  }
+
+  .sw-footer-stats {
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.65rem;
+  }
 }

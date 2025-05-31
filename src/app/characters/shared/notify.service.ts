@@ -13,7 +13,7 @@ export class NotifyService {
    * @param {string} text
    */
   public info(text: string) {
-    this.snackBar.open(text, null, {
+    this.snackBar.open(text, undefined, {
       duration: 10000
     });
   }
@@ -24,7 +24,7 @@ export class NotifyService {
    * @param {string} text
    */
   public warning(text: string) {
-    this.snackBar.open(text, null, {
+    this.snackBar.open(text, undefined, {
       duration: 10000
     });
   }

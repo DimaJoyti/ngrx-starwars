@@ -3,7 +3,8 @@ import {Character} from './character.model';
 import {Species} from './species.model';
 
 @Pipe({
-  name: 'species'
+  name: 'species',
+  standalone: true
 })
 export class SpeciesPipe implements PipeTransform {
 

@@ -22,8 +22,8 @@ export interface CharactersResponse<T> {
 }
 
 export class CharacterFilter {
-  films: string;
-  species: string;
-  minYear: number;
-  maxYear: number;
+  films: string = '';
+  species: string = '';
+  minYear: number = 0;
+  maxYear: number = 200;
 }

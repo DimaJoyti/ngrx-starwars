@@ -1,42 +1,43 @@
 import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { getCurrentPage } from './index';
 import { State } from './character.reducer';
 import { SwapiService } from '../../swapi.service';
 import {
-  CharactersActionTypes,
-  CharactersActions,
-  FetchCharacters,
-  FetchCharactersSuccess,
-  FetchCharactersError
+  fetchCharacters,
+  fetchCharactersSuccess,
+  fetchCharactersError,
+  changePage
 } from './character.actions';
-import { Observable, of } from 'rxjs';
+import { of } from 'rxjs';
 import { map, switchMap, catchError, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class CharactersEffects {
-  @Effect()
-  fetch$: Observable<CharactersActions> = this.actions$
-    .pipe(
-      ofType(CharactersActionTypes.FetchCharacters),
+  fetch$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(fetchCharacters),
       withLatestFrom(this.store),
-      switchMap(([action, state]) =>
+      switchMap(([, state]) =>
         this.service.getCharacters(getCurrentPage(state)).pipe(
-          map(data => new FetchCharactersSuccess(data)),
-          catchError(err => of(new FetchCharactersError(err)))
+          map(data => fetchCharactersSuccess({ payload: data })),
+          catchError(err => of(fetchCharactersError({ payload: err })))
         )
       )
-    );
+    )
+  );
 
-  @Effect()
-  paginate$: Observable<CharactersActions> = this.actions$
-    .pipe(
-      ofType(CharactersActionTypes.ChangePage),
-      map(() => new FetchCharacters())
-    );
+  paginate$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(changePage),
+      map(() => fetchCharacters())
+    )
+  );
 
-  constructor(private actions$: Actions,
-              private store: Store<State>,
-              private service: SwapiService) {}
+  constructor(
+    private actions$: Actions,
+    private store: Store<State>,
+    private service: SwapiService
+  ) {}
 }

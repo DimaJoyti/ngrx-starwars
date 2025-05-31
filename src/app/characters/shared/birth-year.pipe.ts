@@ -2,7 +2,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {Character} from './character.model';
 
 @Pipe({
-  name: 'birthYear'
+  name: 'birthYear',
+  standalone: true
 })
 export class BirthYearPipe implements PipeTransform {
   static MIN_YEAR_ANY = -1000;
@@ -38,7 +39,7 @@ export class BirthYearPipe implements PipeTransform {
       return Number(dateString.substr(0, dateString.length - 3));
     }
     // can't parse the date or unknown
-    return null;
+    return 0;
   }
 
 }

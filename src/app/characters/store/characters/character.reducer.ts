@@ -1,5 +1,5 @@
-import { Action } from '@ngrx/store';
-import { CharactersActions, CharactersActionTypes, Pagination } from './character.actions';
+import { createReducer, on } from '@ngrx/store';
+import { fetchCharacters, fetchCharactersSuccess, fetchCharactersError, changePage, Pagination } from './character.actions';
 import { Character } from '../../models/character';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -23,46 +23,27 @@ export const initialState: State = {
 
 export const charactersFeatureKey = 'characters';
 
-export function reducer(state = initialState, action: CharactersActions): State {
-  switch (action.type) {
-
-    case CharactersActionTypes.FetchCharacters:
-      return {
-        ...state,
-        isLoading: true,
-        error: null
-      };
-
-    case CharactersActionTypes.FetchCharactersSuccess:
-      return {
-        ...state,
-        isLoading: false,
-        data: action.payload.results,
-        next: action.payload.next,
-        previous: action.payload.previous
-      };
-
-    case CharactersActionTypes.FetchCharactersError:
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload
-      };
-
-    case CharactersActionTypes.FetchCharactersError:
-      return {
-        ...state,
-        isLoading: false,
-        error: action.payload
-      };
-
-    case CharactersActionTypes.ChangePage:
-      return {
-        ...state,
-        page: action.payload === Pagination.NEXT ? ++state.page : --state.page
-      };
-
-    default:
-      return state;
-  }
-}
+export const reducer = createReducer(
+  initialState,
+  on(fetchCharacters, (state) => ({
+    ...state,
+    isLoading: true,
+    error: null
+  })),
+  on(fetchCharactersSuccess, (state, { payload }) => ({
+    ...state,
+    isLoading: false,
+    data: payload.results,
+    next: payload.next,
+    previous: payload.previous
+  })),
+  on(fetchCharactersError, (state, { payload }) => ({
+    ...state,
+    isLoading: false,
+    error: payload
+  })),
+  on(changePage, (state, { payload }) => ({
+    ...state,
+    page: payload === Pagination.NEXT ? state.page + 1 : state.page - 1
+  }))
+);

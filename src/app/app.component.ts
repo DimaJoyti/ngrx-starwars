@@ -1,5 +1,13 @@
 import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
+import { RouterOutlet, RouterModule } from '@angular/router';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
+import { VERSION } from '@angular/core';
 import {
   animate,
   group,
@@ -11,6 +19,17 @@ import {
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    RouterModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSidenavModule,
+    MatListModule,
+    MatDividerModule
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   animations: [
@@ -77,21 +96,22 @@ import {
   ]
 })
 export class AppComponent implements OnDestroy {
-  title = 'sw';
+  title = 'Star Wars Character Explorer';
+  angularVersion = VERSION.full;
   mobileQuery: MediaQueryList;
   private _mobileQueryListener: () => void;
 
   constructor(changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-    this.mobileQuery.addListener(this._mobileQueryListener);
+    this.mobileQuery.addEventListener('change', this._mobileQueryListener);
   }
 
-  getState(outlet) {
+  getState(outlet: any) {
     return outlet.activatedRouteData.state;
   }
 
   ngOnDestroy(): void {
-    this.mobileQuery.removeListener(this._mobileQueryListener);
+    this.mobileQuery.removeEventListener('change', this._mobileQueryListener);
   }
 }

@@ -1,24 +1,120 @@
-<mat-progress-bar *ngIf="!(characters | async)" mode="indeterminate"></mat-progress-bar>
-<div class="sw-characters-list">
-  <sw-character-search (onFilter)="setFilter($event)"></sw-character-search>
+@if (!(characters | async)) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
 
-  <mat-card class="sw-card" *ngIf="(characters | async)">
-    <mat-list role="list">
-      <a mat-list-item class="mat-list-option"
-        *ngFor="let character of (characters | async | films: filter.films |species: filter.species | birthYear: filter.minYear:filter.maxYear)"
-        role="listitem" (click)="goToCharacter(character)">
-        <mat-icon mat-list-icon>face</mat-icon>
-        <h4 mat-line>{{character.name}}</h4>
-      </a>
-    </mat-list>
-  </mat-card>
-  <div class="loader__bg" *ngIf="isLoading$ | async">
-    <mat-spinner class="loader" color="primary" mode="indeterminate" [diameter]="40" [value]="25"></mat-spinner>
+<!-- Star Wars Hero Section -->
+<section class="sw-hero-section">
+  <div class="sw-hero-content">
+    <div class="sw-hero-text">
+      <h1 class="sw-hero-title sw-glow-in">
+        Explore the Galaxy
+      </h1>
+      <p class="sw-hero-subtitle">
+        Discover characters from a galaxy far, far away...
+      </p>
+      <div class="sw-hero-stats">
+        <div class="sw-stat-item">
+          <span class="sw-stat-number">{{ (characters | async)?.length || 0 }}</span>
+          <span class="sw-stat-label">Characters</span>
+        </div>
+        <div class="sw-stat-item">
+          <span class="sw-stat-number">9</span>
+          <span class="sw-stat-label">Episodes</span>
+        </div>
+        <div class="sw-stat-item">
+          <span class="sw-stat-number">∞</span>
+          <span class="sw-stat-label">Adventures</span>
+        </div>
+      </div>
+    </div>
+    <div class="sw-hero-visual">
+      <div class="sw-death-star"></div>
+      <div class="sw-stars"></div>
+    </div>
   </div>
+</section>
 
-  <section class="full-width pager">
-    <button mat-raised-button color="primary" [class.invisible]="isFirst$ | async" (click)="prev()">PREVIOUS</button>
+<div class="sw-characters-list">
+  <!-- <sw-character-search (onFilter)="setFilter($event)"></sw-character-search> -->
 
-    <button mat-raised-button color="primary" [class.invisible]="isLast$ | async" (click)="next()">NEXT</button>
+  @if (characters | async; as characterList) {
+    <div class="sw-characters-grid">
+      @for (character of characterList; track character.url) {
+        <mat-card class="sw-character-card fade-in"
+                  (click)="goToCharacter(character)"
+                  [attr.aria-label]="'View details for ' + character.name"
+                  tabindex="0"
+                  (keydown.enter)="goToCharacter(character)"
+                  (keydown.space)="goToCharacter(character)">
+          <mat-card-header>
+            <div class="sw-character-avatar" mat-card-avatar>
+              <mat-icon class="sw-character-icon">{{ getCharacterIcon(character) }}</mat-icon>
+            </div>
+            <mat-card-title class="sw-character-name">{{ character.name }}</mat-card-title>
+            <mat-card-subtitle class="sw-character-info">
+              {{ getCharacterInfo(character) }}
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="sw-character-details">
+              <div class="sw-detail-item">
+                <mat-icon class="sw-detail-icon">cake</mat-icon>
+                <span>{{ character.birth_year || 'Unknown' }}</span>
+              </div>
+              <div class="sw-detail-item">
+                <mat-icon class="sw-detail-icon">height</mat-icon>
+                <span>{{ character.height || 'Unknown' }} cm</span>
+              </div>
+              <div class="sw-detail-item">
+                <mat-icon class="sw-detail-icon">scale</mat-icon>
+                <span>{{ character.mass || 'Unknown' }} kg</span>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-button class="sw-view-btn">
+              <mat-icon>visibility</mat-icon>
+              View Details
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+
+  @if (isLoading$ | async) {
+    <div class="sw-loading-overlay">
+      <div class="sw-loading-content">
+        <div class="sw-lightsaber-loader"></div>
+        <p class="sw-loading-text">Loading characters from the galaxy...</p>
+      </div>
+    </div>
+  }
+
+  <!-- Pagination -->
+  <section class="sw-pagination">
+    <button mat-raised-button
+            color="primary"
+            [class.sw-hidden]="isFirst$ | async"
+            (click)="prev()"
+            class="sw-nav-btn">
+      <mat-icon>arrow_back</mat-icon>
+      Previous
+    </button>
+
+    <div class="sw-page-info">
+      <span class="sw-page-text">Explore more characters</span>
+    </div>
+
+    <button mat-raised-button
+            color="primary"
+            [class.sw-hidden]="isLast$ | async"
+            (click)="next()"
+            class="sw-nav-btn">
+      Next
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
   </section>
 </div>

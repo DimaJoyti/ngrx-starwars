@@ -2,7 +2,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 
 @Pipe({
-  name: 'battleOfYavin'
+  name: 'battleOfYavin',
+  standalone: true
 })
 export class BattleOfYavinPipe implements PipeTransform {
 

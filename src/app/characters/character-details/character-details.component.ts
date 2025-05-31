@@ -1,5 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { CharacterService } from '../shared/character.service';
 import { Character } from '../shared/character.model';
 import { Starships } from '../shared/starships.model';
@@ -13,15 +19,25 @@ import { FilmState } from './../store/films/films.state';
 
 @Component({
   selector: 'sw-character-details',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatProgressBarModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatExpansionModule
+  ],
   templateUrl: './character-details.component.html',
   styleUrls: ['./character-details.component.scss']
 })
 export class CharacterDetailsComponent implements OnInit {
-  characterId: number;
-  character: Character;
-  species: Observable<Species[]>;
-  startships: Observable<Starships[]>;
-  films: Observable<Film[]>;
+  characterId!: number;
+  character: Character | null = null;
+  species!: Observable<Species[]>;
+  startships!: Observable<Starships[]>;
+  films!: Observable<Film[]>;
 
   constructor(  
     private route: ActivatedRoute,
@@ -33,7 +49,7 @@ export class CharacterDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      this.characterId = +params.get('id');
+      this.characterId = +(params.get('id') || 0);
       if (this.characterId) {
         this.characterService.getCharacter(this.characterId).subscribe(
           character => {
@@ -58,8 +74,10 @@ export class CharacterDetailsComponent implements OnInit {
   }
 
   private fetchDetails() {
-    this.species = this.characterService.getSpeciesOfCharacter(this.character);
-    this.films = this.characterService.getMoviesOfCharacter(this.character);
-    this.startships = this.characterService.getShipsOfCharacter(this.character);
+    if (this.character) {
+      this.species = this.characterService.getSpeciesOfCharacter(this.character);
+      this.films = this.characterService.getMoviesOfCharacter(this.character);
+      this.startships = this.characterService.getShipsOfCharacter(this.character);
+    }
   }
 }
