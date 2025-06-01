@@ -30,6 +30,26 @@ export const routes: Routes = [
     loadChildren: () => import('./game/game.routes').then(m => m.gameRoutes)
   },
   {
+    path: 'test-3d',
+    loadComponent: () => import('./shared/three/test-three.component').then(m => m.TestThreeComponent)
+  },
+  {
+    path: 'test-battle',
+    loadComponent: () => import('./shared/three/test-battle.component').then(m => m.TestBattleComponent)
+  },
+  {
+    path: 'galaxy-3d',
+    loadComponent: () => import('./game/exploration/galaxy-map/galaxy-map-3d.component').then(m => m.GalaxyMap3DComponent)
+  },
+  {
+    path: 'ships-3d',
+    loadComponent: () => import('./game/collection/ship-collection-3d.component').then(m => m.ShipCollection3DComponent)
+  },
+  {
+    path: 'battle-3d',
+    loadComponent: () => import('./game/battle/battle-arena/battle-arena.component').then(m => m.BattleArenaComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

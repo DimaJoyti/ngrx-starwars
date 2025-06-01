@@ -94,6 +94,34 @@
           <span matListItemLine>Quiz, battles & exploration</span>
         </a>
 
+        <a mat-list-item [routerLink]="['/test-3d']" routerLinkActive="active"
+           (click)="mobileQuery.matches && sidenav.close()">
+          <mat-icon matListItemIcon>view_in_ar</mat-icon>
+          <span matListItemTitle>3D Test</span>
+          <span matListItemLine>Test 3D functionality</span>
+        </a>
+
+        <a mat-list-item [routerLink]="['/galaxy-3d']" routerLinkActive="active"
+           (click)="mobileQuery.matches && sidenav.close()">
+          <mat-icon matListItemIcon>explore</mat-icon>
+          <span matListItemTitle>3D Galaxy</span>
+          <span matListItemLine>3D galaxy map</span>
+        </a>
+
+        <a mat-list-item [routerLink]="['/ships-3d']" routerLinkActive="active"
+           (click)="mobileQuery.matches && sidenav.close()">
+          <mat-icon matListItemIcon>rocket_launch</mat-icon>
+          <span matListItemTitle>3D Ships</span>
+          <span matListItemLine>3D ship collection</span>
+        </a>
+
+        <a mat-list-item [routerLink]="['/battle-3d']" routerLinkActive="active"
+           (click)="mobileQuery.matches && sidenav.close()">
+          <mat-icon matListItemIcon>military_tech</mat-icon>
+          <span matListItemTitle>3D Battle</span>
+          <span matListItemLine>3D space battles</span>
+        </a>
+
         <mat-divider></mat-divider>
 
         <h3 mat-subheader class="sw-nav-header">

@@ -111,6 +111,19 @@ func main() {
 
 		// Weapons endpoints
 		api.GET("/weapons", handlers.GetWeapons)
+
+		// Marketplace endpoints
+		marketplace := api.Group("/marketplace")
+		{
+			marketplace.GET("/products", handlers.GetProductsGin)
+			marketplace.GET("/products/:id", handlers.GetProductByIDGin)
+			marketplace.GET("/featured", handlers.GetFeaturedProductsGin)
+			marketplace.GET("/sale", handlers.GetSaleProductsGin)
+			marketplace.POST("/search", handlers.SearchProductsGin)
+			marketplace.GET("/cart", handlers.GetCartGin)
+			marketplace.POST("/cart/add", handlers.AddToCartGin)
+			marketplace.POST("/sync", handlers.SyncWithBrightDataGin)
+		}
 	}
 
 	// Health check endpoint with detailed information

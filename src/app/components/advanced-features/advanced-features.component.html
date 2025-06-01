@@ -1,0 +1,490 @@
+<!-- Advanced Features Dashboard -->
+<div class="advanced-features">
+  <!-- Header -->
+  <div class="features-header">
+    <h1 class="title">
+      <span class="star-wars-font">Advanced Features</span>
+      <span class="subtitle">Enhanced with Bright Data MCP</span>
+    </h1>
+  </div>
+
+  <!-- Feature Navigation -->
+  <div class="feature-nav">
+    <button 
+      mat-raised-button 
+      [color]="selectedFeature === 'battle' ? 'primary' : ''"
+      (click)="selectFeature('battle')"
+      class="nav-button">
+      <mat-icon>flash_on</mat-icon>
+      Battle System
+    </button>
+    
+    <button 
+      mat-raised-button 
+      [color]="selectedFeature === 'exploration' ? 'primary' : ''"
+      (click)="selectFeature('exploration')"
+      class="nav-button">
+      <mat-icon>explore</mat-icon>
+      Exploration
+    </button>
+    
+    <button 
+      mat-raised-button 
+      [color]="selectedFeature === 'performance' ? 'primary' : ''"
+      (click)="selectFeature('performance')"
+      class="nav-button">
+      <mat-icon>speed</mat-icon>
+      Performance
+    </button>
+    
+    <button 
+      mat-raised-button 
+      [color]="selectedFeature === 'brightdata' ? 'primary' : ''"
+      (click)="selectFeature('brightdata')"
+      class="nav-button">
+      <mat-icon>cloud_sync</mat-icon>
+      Bright Data
+    </button>
+  </div>
+
+  <!-- Feature Content -->
+  <div class="feature-content">
+    
+    <!-- Battle System -->
+    <div *ngIf="selectedFeature === 'battle'" class="battle-system">
+      <h2>Advanced Battle System</h2>
+      
+      <!-- Ship Selection -->
+      <div class="ship-selection">
+        <div class="player-ship">
+          <h3>Player Ship</h3>
+          <mat-card class="ship-selector">
+            <mat-select 
+              [(value)]="selectedPlayerShip" 
+              placeholder="Select your starship">
+              <mat-option 
+                *ngFor="let ship of availableStarships" 
+                [value]="ship">
+                {{ ship.name }} ({{ ship.gameplayStats?.rarity }})
+              </mat-option>
+            </mat-select>
+          </mat-card>
+          
+          <!-- Player Ship Stats -->
+          <div *ngIf="selectedPlayerShip" class="ship-stats">
+            <div class="stat-item">
+              <span>Attack:</span>
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="selectedPlayerShip.gameplayStats?.attackPower">
+              </mat-progress-bar>
+            </div>
+            <div class="stat-item">
+              <span>Defense:</span>
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="selectedPlayerShip.gameplayStats?.defense">
+              </mat-progress-bar>
+            </div>
+            <div class="stat-item">
+              <span>Speed:</span>
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="selectedPlayerShip.gameplayStats?.speed">
+              </mat-progress-bar>
+            </div>
+          </div>
+        </div>
+
+        <div class="enemy-ship">
+          <h3>Enemy Ship (Optional)</h3>
+          <mat-card class="ship-selector">
+            <mat-select 
+              [(value)]="selectedEnemyShip" 
+              placeholder="Select enemy (random if none)">
+              <mat-option [value]="null">Random Enemy</mat-option>
+              <mat-option 
+                *ngFor="let ship of availableStarships" 
+                [value]="ship">
+                {{ ship.name }}
+              </mat-option>
+            </mat-select>
+          </mat-card>
+        </div>
+      </div>
+
+      <!-- Battle Controls -->
+      <div class="battle-controls">
+        <button 
+          mat-raised-button 
+          color="accent"
+          [disabled]="!selectedPlayerShip || battleInProgress"
+          (click)="startBattle()">
+          <mat-icon>play_arrow</mat-icon>
+          Start Battle
+        </button>
+        
+        <button 
+          mat-raised-button 
+          color="warn"
+          [disabled]="!battleInProgress"
+          (click)="playerAttack()">
+          <mat-icon>flash_on</mat-icon>
+          Attack
+        </button>
+      </div>
+
+      <!-- Battle State Display -->
+      <div *ngIf="battleState$ | async as battle" class="battle-display">
+        <div class="battle-info">
+          <h4>{{ battle.playerShip.name }} vs {{ battle.enemyShip.name }}</h4>
+          <p>Wave: {{ battle.currentWave }} | Score: {{ battle.score }}</p>
+        </div>
+        
+        <div class="health-bars">
+          <div class="player-health">
+            <span>Player Health</span>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="getHealthPercentage(battle.playerHealth, battle.playerShip.technicalSpecs?.hullIntegrity || 100)"
+              [color]="getProgressColor(getHealthPercentage(battle.playerHealth, battle.playerShip.technicalSpecs?.hullIntegrity || 100))">
+            </mat-progress-bar>
+            <span>{{ battle.playerHealth }}/{{ battle.playerShip.technicalSpecs?.hullIntegrity || 100 }}</span>
+          </div>
+          
+          <div class="enemy-health">
+            <span>Enemy Health</span>
+            <mat-progress-bar 
+              mode="determinate" 
+              [value]="getHealthPercentage(battle.enemyHealth, battle.enemyShip.technicalSpecs?.hullIntegrity || 100)"
+              color="warn">
+            </mat-progress-bar>
+            <span>{{ battle.enemyHealth }}/{{ battle.enemyShip.technicalSpecs?.hullIntegrity || 100 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exploration System -->
+    <div *ngIf="selectedFeature === 'exploration'" class="exploration-system">
+      <h2>Planet Exploration</h2>
+      
+      <!-- Planet Selection -->
+      <div class="planet-selection">
+        <h3>Select Planet</h3>
+        <mat-card class="planet-selector">
+          <mat-select 
+            [(value)]="selectedPlanet" 
+            placeholder="Choose a planet to explore">
+            <mat-option 
+              *ngFor="let planet of availablePlanets" 
+              [value]="planet">
+              {{ planet.name }} ({{ planet.climate }})
+            </mat-option>
+          </mat-select>
+        </mat-card>
+        
+        <!-- Planet Info -->
+        <div *ngIf="selectedPlanet" class="planet-info">
+          <h4>{{ selectedPlanet.name }}</h4>
+          <p><strong>Climate:</strong> {{ selectedPlanet.climate }}</p>
+          <p><strong>Terrain:</strong> {{ selectedPlanet.terrain }}</p>
+          <p><strong>Difficulty:</strong> {{ selectedPlanet.gameplayData?.explorationDifficulty }}/10</p>
+          
+          <div class="resources">
+            <h5>Available Resources:</h5>
+            <mat-chip-list>
+              <mat-chip 
+                *ngFor="let resource of selectedPlanet.gameplayData?.resourceTypes"
+                color="primary">
+                {{ resource }}
+              </mat-chip>
+            </mat-chip-list>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exploration Controls -->
+      <div class="exploration-controls">
+        <button 
+          mat-raised-button 
+          color="accent"
+          [disabled]="!selectedPlanet || explorationInProgress"
+          (click)="startExploration()">
+          <mat-icon>explore</mat-icon>
+          Start Exploration
+        </button>
+      </div>
+
+      <!-- Exploration State -->
+      <div *ngIf="explorationState$ | async as exploration" class="exploration-display">
+        <div class="exploration-info">
+          <h4>Exploring {{ exploration.planet.name }}</h4>
+          <p>Progress: {{ exploration.explorationProgress }}%</p>
+          <p>Position: ({{ exploration.playerPosition.x }}, {{ exploration.playerPosition.z }})</p>
+        </div>
+        
+        <!-- Movement Controls -->
+        <div class="movement-controls">
+          <button mat-icon-button (click)="movePlayer('north')">
+            <mat-icon>keyboard_arrow_up</mat-icon>
+          </button>
+          <div class="horizontal-controls">
+            <button mat-icon-button (click)="movePlayer('west')">
+              <mat-icon>keyboard_arrow_left</mat-icon>
+            </button>
+            <button mat-icon-button (click)="movePlayer('east')">
+              <mat-icon>keyboard_arrow_right</mat-icon>
+            </button>
+          </div>
+          <button mat-icon-button (click)="movePlayer('south')">
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          </button>
+        </div>
+        
+        <!-- Resources -->
+        <div class="collected-resources">
+          <h5>Collected Resources:</h5>
+          <div *ngFor="let resource of exploration.collectedResources | keyvalue">
+            {{ resource.key }}: {{ resource.value }}
+            <button 
+              mat-button 
+              size="small"
+              (click)="collectResource(resource.key)">
+              Collect More
+            </button>
+          </div>
+        </div>
+        
+        <!-- Current Hazards -->
+        <div *ngIf="exploration.currentHazards.length > 0" class="hazards">
+          <h5>Current Hazards:</h5>
+          <mat-chip-list>
+            <mat-chip 
+              *ngFor="let hazard of exploration.currentHazards"
+              color="warn">
+              {{ hazard }}
+            </mat-chip>
+          </mat-chip-list>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Monitoring -->
+    <div *ngIf="selectedFeature === 'performance'" class="performance-system">
+      <h2>3D Performance Optimization</h2>
+      
+      <!-- Performance Controls -->
+      <div class="performance-controls">
+        <mat-slide-toggle 
+          [(ngModel)]="performanceOptimized"
+          (change)="togglePerformanceMode()">
+          Performance Mode
+        </mat-slide-toggle>
+        
+        <mat-slide-toggle 
+          [(ngModel)]="showPerformanceMetrics"
+          (change)="togglePerformanceMetrics()">
+          Show Metrics
+        </mat-slide-toggle>
+        
+        <button 
+          mat-button 
+          (click)="clearModelCache()">
+          <mat-icon>clear_all</mat-icon>
+          Clear Cache
+        </button>
+      </div>
+
+      <!-- Performance Metrics -->
+      <div *ngIf="showPerformanceMetrics && (performanceMetrics$ | async) as metrics" class="performance-metrics">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Performance Metrics</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metric-grid">
+              <div class="metric-item">
+                <span class="metric-label">FPS:</span>
+                <span class="metric-value" [class.warning]="metrics.fps < 30">
+                  {{ formatPerformanceMetric(metrics.fps, '') }}
+                </span>
+              </div>
+              
+              <div class="metric-item">
+                <span class="metric-label">Frame Time:</span>
+                <span class="metric-value">
+                  {{ formatPerformanceMetric(metrics.frameTime, 'ms') }}
+                </span>
+              </div>
+              
+              <div class="metric-item">
+                <span class="metric-label">Draw Calls:</span>
+                <span class="metric-value">
+                  {{ metrics.drawCalls }}
+                </span>
+              </div>
+              
+              <div class="metric-item">
+                <span class="metric-label">Triangles:</span>
+                <span class="metric-value">
+                  {{ metrics.triangles.toLocaleString() }}
+                </span>
+              </div>
+              
+              <div class="metric-item">
+                <span class="metric-label">Memory:</span>
+                <span class="metric-value">
+                  {{ formatPerformanceMetric(metrics.memoryUsage / 1024 / 1024, 'MB') }}
+                </span>
+              </div>
+              
+              <div class="metric-item">
+                <span class="metric-label">Render Time:</span>
+                <span class="metric-value">
+                  {{ formatPerformanceMetric(metrics.renderTime, 'ms') }}
+                </span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Optimized 3D Scene -->
+      <div class="optimized-scene-container">
+        <div #optimizedScene class="optimized-scene"></div>
+      </div>
+    </div>
+
+    <!-- Bright Data Features -->
+    <div *ngIf="selectedFeature === 'brightdata'" class="brightdata-features">
+      <h2>Bright Data MCP Integration</h2>
+      
+      <!-- Star Wars News -->
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-card-title>Latest Star Wars News</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="loadingNews" class="loading">
+            <mat-spinner diameter="30"></mat-spinner>
+            <span>Loading news...</span>
+          </div>
+          
+          <div *ngIf="!loadingNews && starWarsNews.length > 0" class="news-list">
+            <div *ngFor="let article of starWarsNews.slice(0, 5)" class="news-item">
+              <h4>{{ article.title }}</h4>
+              <p>{{ article.summary }}</p>
+              <small>{{ article.publishedDate | date }}</small>
+            </div>
+          </div>
+          
+          <div *ngIf="!loadingNews && starWarsNews.length === 0" class="no-data">
+            No news available
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Trending Topics -->
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-card-title>Trending Topics</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="loadingTrending" class="loading">
+            <mat-spinner diameter="30"></mat-spinner>
+            <span>Loading trends...</span>
+          </div>
+          
+          <mat-chip-list *ngIf="!loadingTrending">
+            <mat-chip 
+              *ngFor="let topic of trendingTopics"
+              color="accent">
+              {{ topic }}
+            </mat-chip>
+          </mat-chip-list>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Social Media Mentions -->
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-card-title>Social Media Buzz</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="loadingSocial" class="loading">
+            <mat-spinner diameter="30"></mat-spinner>
+            <span>Loading social mentions...</span>
+          </div>
+          
+          <div *ngIf="!loadingSocial && socialMentions.length > 0" class="social-list">
+            <div *ngFor="let mention of socialMentions.slice(0, 3)" class="social-item">
+              <p>{{ mention.content }}</p>
+              <small>{{ mention.platform }} - {{ mention.timestamp | date }}</small>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Data Analytics -->
+      <mat-card class="feature-card">
+        <mat-card-header>
+          <mat-card-title>Data Analytics</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div *ngIf="loadingAnalytics" class="loading">
+            <mat-spinner diameter="30"></mat-spinner>
+            <span>Loading analytics...</span>
+          </div>
+          
+          <div *ngIf="!loadingAnalytics && dataAnalytics" class="analytics-display">
+            <div class="analytics-grid">
+              <div class="analytics-item">
+                <span class="analytics-label">Total Starships:</span>
+                <span class="analytics-value">{{ dataAnalytics.totalStarships }}</span>
+              </div>
+              <div class="analytics-item">
+                <span class="analytics-label">Total Planets:</span>
+                <span class="analytics-value">{{ dataAnalytics.totalPlanets }}</span>
+              </div>
+              <div class="analytics-item">
+                <span class="analytics-label">Data Quality:</span>
+                <span class="analytics-value">{{ dataAnalytics.dataQuality }}%</span>
+              </div>
+              <div class="analytics-item">
+                <span class="analytics-label">Last Update:</span>
+                <span class="analytics-value">{{ dataAnalytics.lastUpdate | date }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Player Progress Display -->
+  <div *ngIf="playerProgress$ | async as progress" class="player-progress">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Player Progress</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="progress-grid">
+          <div class="progress-item">
+            <span>Level: {{ progress.level }}</span>
+            <span>XP: {{ progress.experience }}</span>
+          </div>
+          <div class="progress-item">
+            <span>Credits: {{ progress.credits.toLocaleString() }}</span>
+          </div>
+          <div class="progress-item">
+            <span>Unlocked Ships: {{ progress.unlockedShips.length }}</span>
+          </div>
+          <div class="progress-item">
+            <span>Achievements: {{ progress.achievements.length }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,360 @@
+<!-- Bright Data MCP Dashboard -->
+<div class="bright-data-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1 class="title">
+      <span class="star-wars-font">Star Wars Data Explorer</span>
+      <span class="subtitle">Powered by Bright Data MCP</span>
+    </h1>
+    
+    <!-- Sync Controls -->
+    <div class="sync-controls">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="syncWithBrightData()"
+        [disabled]="loading$ | async">
+        <mat-icon>sync</mat-icon>
+        Sync with Bright Data
+      </button>
+      
+      <button 
+        mat-button 
+        (click)="refreshData()"
+        [disabled]="loading$ | async">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Display -->
+  <mat-card *ngIf="error$ | async as error" class="error-card">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error }}</span>
+        <button mat-icon-button (click)="clearError()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading$ | async" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading data from Bright Data MCP...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content" *ngIf="!(loading$ | async)">
+    
+    <!-- Navigation Tabs -->
+    <mat-tab-group
+      [(selectedIndex)]="selectedTabIndex"
+      (selectedTabChange)="selectTab($event.index)">
+
+      <!-- Marketplace Tab -->
+      <mat-tab label="Marketplace">
+        <div class="tab-content">
+          <app-marketplace-home></app-marketplace-home>
+        </div>
+      </mat-tab>
+
+      <!-- Starships Tab -->
+      <mat-tab label="Starships">
+        <div class="tab-content">
+          
+          <!-- Starships Filters -->
+          <div class="filters-section">
+            <mat-form-field appearance="outline">
+              <mat-label>Search Starships</mat-label>
+              <input 
+                matInput 
+                [(ngModel)]="searchQuery" 
+                (keyup.enter)="searchStarships()"
+                placeholder="Search by name or model...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Faction</mat-label>
+              <mat-select 
+                [(value)]="selectedFaction" 
+                (selectionChange)="filterStarshipsByFaction($event.value)">
+                <mat-option value="all">All Factions</mat-option>
+                <mat-option value="rebel">Rebel Alliance</mat-option>
+                <mat-option value="empire">Galactic Empire</mat-option>
+                <mat-option value="neutral">Neutral</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Rarity</mat-label>
+              <mat-select 
+                [(value)]="selectedRarity" 
+                (selectionChange)="filterStarshipsByRarity($event.value)">
+                <mat-option value="all">All Rarities</mat-option>
+                <mat-option value="common">Common</mat-option>
+                <mat-option value="rare">Rare</mat-option>
+                <mat-option value="epic">Epic</mat-option>
+                <mat-option value="legendary">Legendary</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Starships Grid -->
+          <div class="starships-grid">
+            <mat-card 
+              *ngFor="let starship of starships$ | async; trackBy: trackByStarshipId"
+              class="starship-card"
+              [class.selected]="(selectedStarship$ | async)?.id === starship.id"
+              (click)="selectStarship(starship)">
+              
+              <mat-card-header>
+                <mat-card-title>{{ starship.name }}</mat-card-title>
+                <mat-card-subtitle>{{ starship.model }}</mat-card-subtitle>
+                
+                <!-- Rarity Badge -->
+                <div 
+                  class="rarity-badge" 
+                  [style.background-color]="getStarshipRarityColor(starship.gameplayStats?.rarity || 'common')">
+                  {{ starship.gameplayStats?.rarity || 'common' }}
+                </div>
+              </mat-card-header>
+
+              <mat-card-content>
+                <!-- Technical Specs from Bright Data -->
+                <div class="specs-grid" *ngIf="starship.technicalSpecs">
+                  <div class="spec-item">
+                    <span class="spec-label">Length:</span>
+                    <span class="spec-value">{{ starship.technicalSpecs.lengthMeters }}m</span>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-label">Speed:</span>
+                    <span class="spec-value">{{ starship.technicalSpecs.maxSpeedKmh }} km/h</span>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-label">Hyperdrive:</span>
+                    <span class="spec-value">Class {{ starship.technicalSpecs.hyperdriveClass }}</span>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-label">Crew:</span>
+                    <span class="spec-value">{{ starship.technicalSpecs.crewOptimal }}</span>
+                  </div>
+                </div>
+
+                <!-- Performance Ratings -->
+                <div class="performance-ratings" *ngIf="starship.gameplayStats">
+                  <div class="rating-bar">
+                    <span>Attack</span>
+                    <mat-progress-bar 
+                      mode="determinate" 
+                      [value]="starship.gameplayStats.attackPower">
+                    </mat-progress-bar>
+                  </div>
+                  <div class="rating-bar">
+                    <span>Defense</span>
+                    <mat-progress-bar 
+                      mode="determinate" 
+                      [value]="starship.gameplayStats.defense">
+                    </mat-progress-bar>
+                  </div>
+                  <div class="rating-bar">
+                    <span>Speed</span>
+                    <mat-progress-bar 
+                      mode="determinate" 
+                      [value]="getStarshipSpeedRating(starship)">
+                    </mat-progress-bar>
+                  </div>
+                  <div class="rating-bar">
+                    <span>Agility</span>
+                    <mat-progress-bar 
+                      mode="determinate" 
+                      [value]="getStarshipAgilityRating(starship)">
+                    </mat-progress-bar>
+                  </div>
+                </div>
+              </mat-card-content>
+
+              <mat-card-actions>
+                <button 
+                  mat-button 
+                  color="primary"
+                  (click)="selectStarship(starship); $event.stopPropagation()">
+                  <mat-icon>3d_rotation</mat-icon>
+                  View 3D
+                </button>
+                <button 
+                  mat-button 
+                  color="accent"
+                  (click)="startBattle(starship); $event.stopPropagation()">
+                  <mat-icon>flash_on</mat-icon>
+                  Battle
+                </button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Planets Tab -->
+      <mat-tab label="Planets">
+        <div class="tab-content">
+          
+          <!-- Planets Filters -->
+          <div class="filters-section">
+            <mat-form-field appearance="outline">
+              <mat-label>Search Planets</mat-label>
+              <input 
+                matInput 
+                [(ngModel)]="searchQuery" 
+                (keyup.enter)="searchPlanets()"
+                placeholder="Search by name or terrain...">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Climate</mat-label>
+              <mat-select 
+                [(value)]="selectedClimate" 
+                (selectionChange)="filterPlanetsByClimate($event.value)">
+                <mat-option value="all">All Climates</mat-option>
+                <mat-option value="arid">Arid</mat-option>
+                <mat-option value="frozen">Frozen</mat-option>
+                <mat-option value="temperate">Temperate</mat-option>
+                <mat-option value="tropical">Tropical</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Planets Grid -->
+          <div class="planets-grid">
+            <mat-card 
+              *ngFor="let planet of planets$ | async; trackBy: trackByPlanetId"
+              class="planet-card"
+              [class.selected]="(selectedPlanet$ | async)?.id === planet.id"
+              (click)="selectPlanet(planet)">
+              
+              <mat-card-header>
+                <mat-card-title>{{ planet.name }}</mat-card-title>
+                <mat-card-subtitle>{{ planet.climate | titlecase }} Climate</mat-card-subtitle>
+                
+                <!-- Difficulty Badge -->
+                <div 
+                  class="difficulty-badge"
+                  [class.easy]="getPlanetDifficultyRating(planet) <= 3"
+                  [class.medium]="getPlanetDifficultyRating(planet) > 3 && getPlanetDifficultyRating(planet) <= 6"
+                  [class.hard]="getPlanetDifficultyRating(planet) > 6">
+                  Difficulty: {{ getPlanetDifficultyRating(planet) }}/10
+                </div>
+              </mat-card-header>
+
+              <mat-card-content>
+                <!-- Planet Specs from Bright Data -->
+                <div class="specs-grid" *ngIf="planet.planetSpecs">
+                  <div class="spec-item">
+                    <span class="spec-label">Diameter:</span>
+                    <span class="spec-value">{{ formatNumber(planet.planetSpecs.diameterKm) }} km</span>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-label">Population:</span>
+                    <span class="spec-value">{{ formatNumber(planet.planetSpecs.populationCount) }}</span>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-label">Gravity:</span>
+                    <span class="spec-value">{{ planet.planetSpecs.gravityFactor }}x Standard</span>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-label">Stars:</span>
+                    <span class="spec-value">{{ planet.planetSpecs.starCount }}</span>
+                  </div>
+                </div>
+
+                <!-- Resources and Hazards -->
+                <div class="planet-info" *ngIf="planet.gameplayData">
+                  <div class="info-section">
+                    <h4>Resources</h4>
+                    <mat-chip-list>
+                      <mat-chip *ngFor="let resource of planet.gameplayData.resourceTypes">
+                        {{ resource }}
+                      </mat-chip>
+                    </mat-chip-list>
+                  </div>
+                  
+                  <div class="info-section">
+                    <h4>Hazards</h4>
+                    <mat-chip-list>
+                      <mat-chip 
+                        *ngFor="let hazard of planet.gameplayData.environmentalHazards"
+                        color="warn">
+                        {{ hazard }}
+                      </mat-chip>
+                    </mat-chip-list>
+                  </div>
+                </div>
+              </mat-card-content>
+
+              <mat-card-actions>
+                <button 
+                  mat-button 
+                  color="primary"
+                  (click)="selectPlanet(planet); $event.stopPropagation()">
+                  <mat-icon>3d_rotation</mat-icon>
+                  View 3D
+                </button>
+                <button 
+                  mat-button 
+                  color="accent"
+                  (click)="explorePlanet(planet); $event.stopPropagation()">
+                  <mat-icon>explore</mat-icon>
+                  Explore
+                </button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- 3D Viewer Tab -->
+      <mat-tab label="3D Viewer">
+        <div class="tab-content">
+          <div class="scene-container">
+            <div #scene3D class="scene-3d"></div>
+            
+            <!-- 3D Controls -->
+            <div class="scene-controls">
+              <mat-card>
+                <mat-card-content>
+                  <h3>3D Scene Controls</h3>
+                  <p *ngIf="!scene3DInitialized">Select a starship or planet to view in 3D</p>
+                  <p *ngIf="scene3DInitialized">Scene Type: {{ currentSceneType }}</p>
+                  
+                  <!-- Selected Object Info -->
+                  <div *ngIf="selectedStarship$ | async as starship" class="selected-info">
+                    <h4>{{ starship.name }}</h4>
+                    <p>{{ starship.model }}</p>
+                    <div *ngIf="starship.physicsConfig" class="physics-info">
+                      <p><strong>Mass:</strong> {{ starship.physicsConfig.mass }} tons</p>
+                      <p><strong>Agility:</strong> {{ starship.physicsConfig.agility }}/10</p>
+                    </div>
+                  </div>
+                  
+                  <div *ngIf="selectedPlanet$ | async as planet" class="selected-info">
+                    <h4>{{ planet.name }}</h4>
+                    <p>{{ planet.climate | titlecase }} Climate</p>
+                    <div *ngIf="planet.environment3D" class="environment-info">
+                      <p><strong>Terrain:</strong> {{ planet.environment3D.terrainType }}</p>
+                      <p><strong>Weather:</strong> {{ planet.environment3D.weatherType }}</p>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

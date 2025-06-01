@@ -1,0 +1,357 @@
+<!-- Star Wars Marketplace -->
+<div class="marketplace-home">
+
+  <!-- Toast Notifications -->
+  <app-toast-notification></app-toast-notification>
+  
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="star-wars-font">Star Wars Marketplace</span>
+        <span class="hero-subtitle">Discover the Galaxy's Finest Collectibles</span>
+      </h1>
+      
+      <!-- Sync Controls -->
+      <div class="hero-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="syncWithBrightData()"
+          [disabled]="isSyncing$ | async">
+          <mat-icon>sync</mat-icon>
+          <span *ngIf="!(isSyncing$ | async)">Sync Latest Products</span>
+          <span *ngIf="isSyncing$ | async">Syncing...</span>
+        </button>
+
+        <!-- Comparison Button -->
+        <button
+          mat-stroked-button
+          color="accent"
+          (click)="openComparison()"
+          [disabled]="getComparisonCount() === 0">
+          <mat-icon>compare</mat-icon>
+          Compare ({{ getComparisonCount() }})
+        </button>
+      </div>
+    </div>
+    
+    <!-- Hero Background -->
+    <div class="hero-background">
+      <div class="stars"></div>
+      <div class="galaxy"></div>
+    </div>
+  </div>
+
+  <!-- Search and Filters Section -->
+  <div class="search-filters-section">
+    <mat-card class="filters-card">
+      <mat-card-content>
+        
+        <!-- Search Bar -->
+        <div class="search-bar">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search products...</mat-label>
+            <input 
+              matInput 
+              [formControl]="searchControl"
+              placeholder="Search by name, brand, or description">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+          
+          <!-- Category Filter -->
+          <mat-form-field appearance="outline">
+            <mat-label>Category</mat-label>
+            <mat-select 
+              [(value)]="selectedCategory" 
+              (selectionChange)="onCategoryChange($event.value)">
+              <mat-option value="all">All Categories</mat-option>
+              <mat-option 
+                *ngFor="let category of CATEGORY_KEYS" 
+                [value]="category">
+                {{ MARKETPLACE_CATEGORIES[category] }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Rarity Filter -->
+          <mat-form-field appearance="outline">
+            <mat-label>Rarity</mat-label>
+            <mat-select 
+              [(value)]="selectedRarity" 
+              (selectionChange)="onRarityChange($event.value)">
+              <mat-option value="all">All Rarities</mat-option>
+              <mat-option value="common">Common</mat-option>
+              <mat-option value="rare">Rare</mat-option>
+              <mat-option value="epic">Epic</mat-option>
+              <mat-option value="legendary">Legendary</mat-option>
+              <mat-option value="exclusive">Exclusive</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Sort Options -->
+          <mat-form-field appearance="outline">
+            <mat-label>Sort By</mat-label>
+            <mat-select 
+              [(value)]="sortBy" 
+              (selectionChange)="onSortChange($event.value)">
+              <mat-option value="newest">Newest</mat-option>
+              <mat-option value="name">Name</mat-option>
+              <mat-option value="price-low">Price: Low to High</mat-option>
+              <mat-option value="price-high">Price: High to Low</mat-option>
+              <mat-option value="rating">Rating</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Toggle Filters -->
+          <div class="toggle-filters">
+            <mat-slide-toggle 
+              [(ngModel)]="showOnlyInStock"
+              (change)="onToggleInStock()">
+              In Stock Only
+            </mat-slide-toggle>
+            
+            <mat-slide-toggle 
+              [(ngModel)]="showOnlyOnSale"
+              (change)="onToggleOnSale()">
+              On Sale Only
+            </mat-slide-toggle>
+          </div>
+
+          <!-- View Mode Toggle -->
+          <div class="view-mode-toggle">
+            <mat-button-toggle-group 
+              [(value)]="viewMode" 
+              (change)="onViewModeChange($event.value)">
+              <mat-button-toggle value="grid">
+                <mat-icon>grid_view</mat-icon>
+              </mat-button-toggle>
+              <mat-button-toggle value="list">
+                <mat-icon>view_list</mat-icon>
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Featured Products Section -->
+  <div class="featured-section">
+    <h2 class="section-title">
+      <mat-icon>star</mat-icon>
+      Featured Products
+    </h2>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading$ | async" class="featured-loading">
+      <app-skeleton-loader type="product-grid" [count]="6"></app-skeleton-loader>
+    </div>
+
+    <!-- Featured Products -->
+    <div *ngIf="!(isLoading$ | async) && (featuredProducts$ | async) as featuredProducts" class="featured-carousel">
+      <div class="product-card featured-card" 
+           *ngFor="let product of featuredProducts.slice(0, 6); trackBy: trackByProductId">
+        
+        <!-- Product Image -->
+        <div class="product-image">
+          <img [src]="product.images[0]?.url" [alt]="product.name" loading="lazy">
+          
+          <!-- Badges -->
+          <div class="product-badges">
+            <span class="rarity-badge" 
+                  [style.background-color]="getRarityColor(product.rarity)">
+              {{ product.rarity }}
+            </span>
+            <span class="sale-badge" *ngIf="product.isOnSale">
+              -{{ getDiscountPercentage(product.originalPrice || product.price, product.price) }}%
+            </span>
+          </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-info">
+          <h3 class="product-name">{{ product.name }}</h3>
+          <p class="product-brand">{{ product.brand }}</p>
+          
+          <!-- Rating -->
+          <div class="product-rating">
+            <div class="stars">
+              <mat-icon *ngFor="let star of [1,2,3,4,5]" 
+                        [class.filled]="star <= product.rating">
+                star
+              </mat-icon>
+            </div>
+            <span class="rating-text">({{ product.reviewCount }})</span>
+          </div>
+
+          <!-- Price -->
+          <div class="product-price">
+            <span class="current-price">{{ formatPrice(product.price, product.currency) }}</span>
+            <span class="original-price" *ngIf="product.originalPrice && product.isOnSale">
+              {{ formatPrice(product.originalPrice, product.currency) }}
+            </span>
+          </div>
+
+          <!-- Actions -->
+          <div class="product-actions">
+            <button mat-raised-button color="primary"
+                    (click)="addToCart(product)"
+                    [disabled]="!product.inStock">
+              <mat-icon>shopping_cart</mat-icon>
+              {{ product.inStock ? 'Add to Cart' : 'Out of Stock' }}
+            </button>
+
+            <button mat-icon-button
+                    (click)="addToWishlist(product)"
+                    matTooltip="Add to Wishlist">
+              <mat-icon>favorite_border</mat-icon>
+            </button>
+
+            <button mat-icon-button
+                    (click)="toggleComparison(product)"
+                    [class.active]="isInComparison(product)"
+                    [matTooltip]="isInComparison(product) ? 'Remove from Comparison' : 'Add to Comparison'">
+              <mat-icon>compare</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sale Products Section -->
+  <div class="sale-section" *ngIf="saleProducts$ | async as saleProducts">
+    <h2 class="section-title">
+      <mat-icon>local_offer</mat-icon>
+      Special Offers
+    </h2>
+    
+    <div class="sale-grid">
+      <div class="product-card sale-card" 
+           *ngFor="let product of saleProducts.slice(0, 4); trackBy: trackByProductId">
+        
+        <!-- Compact product card for sale items -->
+        <div class="product-image-small">
+          <img [src]="product.images[0]?.url" [alt]="product.name" loading="lazy">
+          <div class="sale-overlay">
+            <span class="discount-text">
+              -{{ getDiscountPercentage(product.originalPrice || product.price, product.price) }}%
+            </span>
+          </div>
+        </div>
+
+        <div class="product-info-compact">
+          <h4 class="product-name-small">{{ product.name }}</h4>
+          <div class="price-comparison">
+            <span class="sale-price">{{ formatPrice(product.price, product.currency) }}</span>
+            <span class="original-price-small">{{ formatPrice(product.originalPrice || product.price, product.currency) }}</span>
+          </div>
+          
+          <button mat-stroked-button color="accent" 
+                  (click)="addToCart(product)"
+                  [disabled]="!product.inStock">
+            Quick Add
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Products Section -->
+  <div class="products-section">
+    <h2 class="section-title">
+      <mat-icon>inventory</mat-icon>
+      All Products
+    </h2>
+
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading$ | async" class="loading-container">
+      <app-skeleton-loader type="product-grid" [count]="12"></app-skeleton-loader>
+    </div>
+
+    <!-- Products Grid/List -->
+    <div class="products-container" *ngIf="!(isLoading$ | async)">
+      <div [class]="'products-' + viewMode">
+        
+        <div class="product-card" 
+             [class.list-view]="viewMode === 'list'"
+             *ngFor="let product of allProducts$ | async; trackBy: trackByProductId">
+          
+          <!-- Product content similar to featured cards but with more details for list view -->
+          <div class="product-image" [class.image-small]="viewMode === 'list'">
+            <img [src]="product.images[0]?.url" [alt]="product.name" loading="lazy">
+            
+            <div class="product-badges">
+              <span class="rarity-badge" 
+                    [style.background-color]="getRarityColor(product.rarity)">
+                {{ product.rarity }}
+              </span>
+              <span class="sale-badge" *ngIf="product.isOnSale">
+                -{{ getDiscountPercentage(product.originalPrice || product.price, product.price) }}%
+              </span>
+              <span class="new-badge" *ngIf="product.isNew">NEW</span>
+            </div>
+          </div>
+
+          <div class="product-info" [class.info-expanded]="viewMode === 'list'">
+            <h3 class="product-name">{{ product.name }}</h3>
+            <p class="product-brand">{{ product.brand }}</p>
+            <p class="product-description" *ngIf="viewMode === 'list'">
+              {{ product.shortDescription || product.description }}
+            </p>
+            
+            <div class="product-rating">
+              <div class="stars">
+                <mat-icon *ngFor="let star of [1,2,3,4,5]" 
+                          [class.filled]="star <= product.rating">
+                  star
+                </mat-icon>
+              </div>
+              <span class="rating-text">({{ product.reviewCount }})</span>
+            </div>
+
+            <div class="product-price">
+              <span class="current-price">{{ formatPrice(product.price, product.currency) }}</span>
+              <span class="original-price" *ngIf="product.originalPrice && product.isOnSale">
+                {{ formatPrice(product.originalPrice, product.currency) }}
+              </span>
+            </div>
+
+            <div class="product-actions">
+              <button mat-raised-button color="primary"
+                      (click)="addToCart(product)"
+                      [disabled]="!product.inStock">
+                <mat-icon>shopping_cart</mat-icon>
+                {{ product.inStock ? 'Add to Cart' : 'Out of Stock' }}
+              </button>
+
+              <button mat-icon-button
+                      (click)="addToWishlist(product)"
+                      matTooltip="Add to Wishlist">
+                <mat-icon>favorite_border</mat-icon>
+              </button>
+
+              <button mat-icon-button
+                      (click)="toggleComparison(product)"
+                      [class.active]="isInComparison(product)"
+                      [matTooltip]="isInComparison(product) ? 'Remove from Comparison' : 'Add to Comparison'">
+                <mat-icon>compare</mat-icon>
+              </button>
+
+              <button mat-icon-button
+                      *ngIf="product.has3DModel"
+                      matTooltip="View in 3D">
+                <mat-icon>3d_rotation</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
