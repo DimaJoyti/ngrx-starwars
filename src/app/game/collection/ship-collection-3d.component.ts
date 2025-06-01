@@ -216,7 +216,7 @@ import { Observable, Subscription } from 'rxjs';
     }
 
     .filters ::ng-deep .mat-mdc-form-field {
-      --mdc-filled-text-field-label-text-color: #ffd700;
+      --mat-form-field-filled-label-text-color: #ffd700;
       --mdc-filled-text-field-input-text-color: white;
     }
 

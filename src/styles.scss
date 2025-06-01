@@ -58,7 +58,7 @@ html, body {
 
 /* Star Wars Snackbar Styles */
 .error-snackbar {
-  --mdc-snackbar-container-color: var(--sw-error);
+  --mat-snackbar-container-color: var(--sw-error);
   --mdc-snackbar-supporting-text-color: var(--sw-text-primary);
 
   .mat-mdc-snack-bar-container {
