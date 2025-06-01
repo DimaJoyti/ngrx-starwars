@@ -336,31 +336,6 @@ type PlanetSpecs struct {
 	GovernmentType  string `json:"government_type"`  // "none", "tribal", "republic", "empire"
 }
 
-// Environment3D contains 3D environment configuration for Three.js
-type Environment3D struct {
-	// Skybox and lighting
-	SkyboxTexture string  `json:"skybox_texture"` // Path to skybox texture
-	AmbientColor  string  `json:"ambient_color"`  // Hex color for ambient light
-	SunColor      string  `json:"sun_color"`      // Hex color for directional light
-	SunIntensity  float64 `json:"sun_intensity"`  // Light intensity 0.0-2.0
-
-	// Terrain configuration
-	TerrainType    string  `json:"terrain_type"`    // "desert", "ice", "forest", "city", "ocean"
-	TerrainTexture string  `json:"terrain_texture"` // Path to terrain texture
-	TerrainScale   float64 `json:"terrain_scale"`   // Terrain size multiplier
-	TerrainHeight  float64 `json:"terrain_height"`  // Maximum terrain height
-
-	// Weather and effects
-	WeatherType     string   `json:"weather_type"`     // "clear", "storm", "fog", "snow"
-	ParticleEffects []string `json:"particle_effects"` // ["sand", "snow", "rain", "ash"]
-	FogDensity      float64  `json:"fog_density"`      // Fog density 0.0-1.0
-	FogColor        string   `json:"fog_color"`        // Hex color for fog
-
-	// Audio environment
-	AmbientSound string `json:"ambient_sound"` // Path to ambient audio file
-	MusicTrack   string `json:"music_track"`   // Path to background music
-}
-
 // PlanetGameplay contains game-specific planet data
 type PlanetGameplay struct {
 	// Exploration mechanics

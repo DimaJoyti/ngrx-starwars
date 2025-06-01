@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
-	"math/rand"
 
 	"starwars-api/database"
 	"starwars-api/models"
@@ -21,18 +21,18 @@ func GetQuizQuestions(c *gin.Context) {
 	category := c.Query("category")
 	difficulty := c.Query("difficulty")
 	limitStr := c.DefaultQuery("limit", "10")
-	
+
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit > 50 {
 		limit = 10
 	}
 
 	query := database.DB.Model(&models.QuizQuestion{})
-	
+
 	if category != "" {
 		query = query.Where("category = ?", category)
 	}
-	
+
 	if difficulty != "" {
 		if diff, err := strconv.Atoi(difficulty); err == nil && diff >= 1 && diff <= 3 {
 			query = query.Where("difficulty = ?", diff)
@@ -49,23 +49,23 @@ func GetQuizQuestions(c *gin.Context) {
 	for i := range questions {
 		wrongAnswers := questions[i].GetWrongAnswersArray()
 		allAnswers := append(wrongAnswers, questions[i].CorrectAnswer)
-		
+
 		// Перемішуємо відповіді
 		rand.Shuffle(len(allAnswers), func(i, j int) {
 			allAnswers[i], allAnswers[j] = allAnswers[j], allAnswers[i]
 		})
-		
+
 		// Створюємо відповідь без правильної відповіді (для безпеки)
 		response := gin.H{
-			"id":          questions[i].ID,
-			"category":    questions[i].Category,
-			"question":    questions[i].Question,
-			"answers":     allAnswers,
-			"difficulty":  questions[i].Difficulty,
-			"points":      questions[i].Points,
-			"hint":        questions[i].Hint,
+			"id":         questions[i].ID,
+			"category":   questions[i].Category,
+			"question":   questions[i].Question,
+			"answers":    allAnswers,
+			"difficulty": questions[i].Difficulty,
+			"points":     questions[i].Points,
+			"hint":       questions[i].Hint,
 		}
-		
+
 		if i == 0 {
 			c.JSON(http.StatusOK, gin.H{
 				"questions": []gin.H{response},
@@ -135,7 +135,7 @@ func CreateQuizSession(c *gin.Context) {
 // SubmitQuizAnswer обробляє відповідь на питання
 func SubmitQuizAnswer(c *gin.Context) {
 	sessionID := c.Param("sessionId")
-	
+
 	var req struct {
 		QuestionID     uint   `json:"question_id" binding:"required"`
 		SelectedAnswer string `json:"selected_answer" binding:"required"`
@@ -215,12 +215,12 @@ func SubmitQuizAnswer(c *gin.Context) {
 	}
 
 	response := gin.H{
-		"is_correct":      isCorrect,
-		"correct_answer":  question.CorrectAnswer,
-		"points_earned":   pointsEarned,
-		"current_score":   session.Score,
-		"current_streak":  session.CurrentStreak,
-		"explanation":     question.Explanation,
+		"is_correct":     isCorrect,
+		"correct_answer": question.CorrectAnswer,
+		"points_earned":  pointsEarned,
+		"current_score":  session.Score,
+		"current_streak": session.CurrentStreak,
+		"explanation":    question.Explanation,
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -289,10 +289,10 @@ func CompleteQuizSession(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"session":            session,
-		"experience_gained":  experienceGained,
-		"final_score":        session.Score,
-		"accuracy":           float64(session.CorrectAnswers) / float64(session.QuestionsAnswered) * 100,
+		"session":           session,
+		"experience_gained": experienceGained,
+		"final_score":       session.Score,
+		"accuracy":          float64(session.CorrectAnswers) / float64(session.QuestionsAnswered) * 100,
 	})
 }
 
@@ -305,11 +305,11 @@ func GetQuizLeaderboard(c *gin.Context) {
 	}
 
 	var leaderboard []struct {
-		PlayerID     uint   `json:"player_id"`
-		Username     string `json:"username"`
-		BestScore    int    `json:"best_score"`
-		TotalGames   int    `json:"total_games"`
-		Accuracy     float64 `json:"accuracy"`
+		PlayerID   uint    `json:"player_id"`
+		Username   string  `json:"username"`
+		BestScore  int     `json:"best_score"`
+		TotalGames int     `json:"total_games"`
+		Accuracy   float64 `json:"accuracy"`
 	}
 
 	if err := database.DB.Table("player_stats").

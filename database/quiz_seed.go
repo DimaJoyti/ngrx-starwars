@@ -1,8 +1,8 @@
 package database
 
 import (
-	"starwars-api/models"
 	"log"
+	"starwars-api/models"
 )
 
 // SeedQuizQuestions додає початкові питання для вікторини

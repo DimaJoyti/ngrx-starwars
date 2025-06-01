@@ -6,6 +6,7 @@ import (
 	"starwars-api/database"
 	"starwars-api/handlers"
 	"starwars-api/middleware"
+	"starwars-api/services"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,13 @@ func main() {
 
 	// Initialize database
 	database.Initialize()
+
+	// Initialize services
+	missionService := services.NewMissionService(database.DB)
+	fleetService := services.NewFleetService(database.DB)
+	battleService := services.NewBattleService(database.DB)
+	resourceService := services.NewResourceService(database.DB)
+	achievementService := services.NewAchievementService(database.DB, resourceService)
 
 	// Create Gin router
 	router := gin.New()
@@ -84,6 +92,21 @@ func main() {
 				quiz.GET("/leaderboard", handlers.GetQuizLeaderboard)
 			}
 		}
+
+		// Mission endpoints
+		handlers.RegisterMissionRoutes(router, missionService)
+
+		// Fleet endpoints
+		handlers.RegisterFleetRoutes(router, fleetService)
+
+		// Battle endpoints
+		handlers.RegisterBattleRoutes(router, battleService)
+
+		// Resource endpoints
+		handlers.RegisterResourceRoutes(router, resourceService)
+
+		// Achievement endpoints
+		handlers.RegisterAchievementRoutes(router, achievementService)
 	}
 
 	// Legacy API routes (for backward compatibility)

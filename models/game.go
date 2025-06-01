@@ -20,19 +20,19 @@ type Player struct {
 
 // PlayerStats представляє статистику гравця
 type PlayerStats struct {
-	PlayerID         uint `json:"player_id" gorm:"primaryKey"`
-	TotalGamesPlayed int  `json:"total_games_played" gorm:"default:0"`
-	TotalScore       int  `json:"total_score" gorm:"default:0"`
-	BestScore        int  `json:"best_score" gorm:"default:0"`
-	CorrectAnswers   int  `json:"correct_answers" gorm:"default:0"`
-	TotalQuestions   int  `json:"total_questions" gorm:"default:0"`
-	CurrentStreak    int  `json:"current_streak" gorm:"default:0"`
-	BestStreak       int  `json:"best_streak" gorm:"default:0"`
-	CardsCollected   int  `json:"cards_collected" gorm:"default:0"`
-	BattlesWon       int  `json:"battles_won" gorm:"default:0"`
-	BattlesLost      int  `json:"battles_lost" gorm:"default:0"`
-	PlanetsVisited   int  `json:"planets_visited" gorm:"default:0"`
-	ArtifactsFound   int  `json:"artifacts_found" gorm:"default:0"`
+	PlayerID         uint   `json:"player_id" gorm:"primaryKey"`
+	TotalGamesPlayed int    `json:"total_games_played" gorm:"default:0"`
+	TotalScore       int    `json:"total_score" gorm:"default:0"`
+	BestScore        int    `json:"best_score" gorm:"default:0"`
+	CorrectAnswers   int    `json:"correct_answers" gorm:"default:0"`
+	TotalQuestions   int    `json:"total_questions" gorm:"default:0"`
+	CurrentStreak    int    `json:"current_streak" gorm:"default:0"`
+	BestStreak       int    `json:"best_streak" gorm:"default:0"`
+	CardsCollected   int    `json:"cards_collected" gorm:"default:0"`
+	BattlesWon       int    `json:"battles_won" gorm:"default:0"`
+	BattlesLost      int    `json:"battles_lost" gorm:"default:0"`
+	PlanetsVisited   int    `json:"planets_visited" gorm:"default:0"`
+	ArtifactsFound   int    `json:"artifacts_found" gorm:"default:0"`
 	Player           Player `json:"player" gorm:"foreignKey:PlayerID"`
 }
 
@@ -70,14 +70,14 @@ func (q *QuizQuestion) SetWrongAnswersArray(answers []string) error {
 
 // GameSession представляє ігрову сесію
 type GameSession struct {
-	ID          string    `json:"id" gorm:"primaryKey"`
-	PlayerID    uint      `json:"player_id" gorm:"not null"`
-	GameType    string    `json:"game_type" gorm:"not null"` // quiz, battle, exploration
-	Score       int       `json:"score" gorm:"default:0"`
-	Data        string    `json:"data" gorm:"type:json"` // JSON data specific to game type
-	StartedAt   time.Time `json:"started_at"`
+	ID          string     `json:"id" gorm:"primaryKey"`
+	PlayerID    uint       `json:"player_id" gorm:"not null"`
+	GameType    string     `json:"game_type" gorm:"not null"` // quiz, battle, exploration
+	Score       int        `json:"score" gorm:"default:0"`
+	Data        string     `json:"data" gorm:"type:json"` // JSON data specific to game type
+	StartedAt   time.Time  `json:"started_at"`
 	CompletedAt *time.Time `json:"completed_at"`
-	Player      Player    `json:"player" gorm:"foreignKey:PlayerID"`
+	Player      Player     `json:"player" gorm:"foreignKey:PlayerID"`
 }
 
 // GameCard представляє ігрову картку
@@ -153,27 +153,13 @@ type PlayerCard struct {
 
 // CardPack представляє пакет карток
 type CardPack struct {
-	ID                uint   `json:"id" gorm:"primaryKey"`
-	Name              string `json:"name" gorm:"not null"`
-	Description       string `json:"description"`
-	Cost              int    `json:"cost" gorm:"not null"`
-	CardCount         int    `json:"card_count" gorm:"default:3"`
-	GuaranteedRarity  string `json:"guaranteed_rarity"` // rare, epic, legendary
-	ImageURL          string `json:"image_url"`
-}
-
-// Battle представляє битву між гравцями
-type Battle struct {
-	ID          uint       `json:"id" gorm:"primaryKey"`
-	Player1ID   uint       `json:"player1_id" gorm:"not null"`
-	Player2ID   *uint      `json:"player2_id"` // NULL для битв з AI
-	WinnerID    *uint      `json:"winner_id"`
-	BattleData  string     `json:"battle_data" gorm:"type:json"`
-	CreatedAt   time.Time  `json:"created_at"`
-	CompletedAt *time.Time `json:"completed_at"`
-	Player1     Player     `json:"player1" gorm:"foreignKey:Player1ID"`
-	Player2     *Player    `json:"player2" gorm:"foreignKey:Player2ID"`
-	Winner      *Player    `json:"winner" gorm:"foreignKey:WinnerID"`
+	ID               uint   `json:"id" gorm:"primaryKey"`
+	Name             string `json:"name" gorm:"not null"`
+	Description      string `json:"description"`
+	Cost             int    `json:"cost" gorm:"not null"`
+	CardCount        int    `json:"card_count" gorm:"default:3"`
+	GuaranteedRarity string `json:"guaranteed_rarity"` // rare, epic, legendary
+	ImageURL         string `json:"image_url"`
 }
 
 // Artifact представляє артефакт для збору
@@ -197,42 +183,21 @@ type PlayerArtifact struct {
 	Artifact   Artifact  `json:"artifact" gorm:"foreignKey:ArtifactID"`
 }
 
-// Achievement представляє досягнення
-type Achievement struct {
-	ID          uint   `json:"id" gorm:"primaryKey"`
-	Name        string `json:"name" gorm:"not null"`
-	Description string `json:"description"`
-	Icon        string `json:"icon"`
-	Category    string `json:"category" gorm:"not null"` // quiz, collection, battle, exploration
-	Requirement int    `json:"requirement" gorm:"default:1"`
-	Reward      string `json:"reward" gorm:"type:json"` // JSON object with reward details
-}
-
-// PlayerAchievement представляє досягнення гравця
-type PlayerAchievement struct {
-	ID            uint        `json:"id" gorm:"primaryKey"`
-	PlayerID      uint        `json:"player_id" gorm:"not null"`
-	AchievementID uint        `json:"achievement_id" gorm:"not null"`
-	UnlockedAt    time.Time   `json:"unlocked_at"`
-	Player        Player      `json:"player" gorm:"foreignKey:PlayerID"`
-	Achievement   Achievement `json:"achievement" gorm:"foreignKey:AchievementID"`
-}
-
 // QuizSession представляє сесію вікторини
 type QuizSession struct {
-	ID               string     `json:"id" gorm:"primaryKey"`
-	PlayerID         uint       `json:"player_id" gorm:"not null"`
-	Category         string     `json:"category"`
-	Difficulty       int        `json:"difficulty" gorm:"default:1"`
-	Score            int        `json:"score" gorm:"default:0"`
-	QuestionsAnswered int       `json:"questions_answered" gorm:"default:0"`
-	CorrectAnswers   int        `json:"correct_answers" gorm:"default:0"`
-	CurrentStreak    int        `json:"current_streak" gorm:"default:0"`
-	BestStreak       int        `json:"best_streak" gorm:"default:0"`
-	HintsUsed        int        `json:"hints_used" gorm:"default:0"`
-	StartedAt        time.Time  `json:"started_at"`
-	CompletedAt      *time.Time `json:"completed_at"`
-	Player           Player     `json:"player" gorm:"foreignKey:PlayerID"`
+	ID                string     `json:"id" gorm:"primaryKey"`
+	PlayerID          uint       `json:"player_id" gorm:"not null"`
+	Category          string     `json:"category"`
+	Difficulty        int        `json:"difficulty" gorm:"default:1"`
+	Score             int        `json:"score" gorm:"default:0"`
+	QuestionsAnswered int        `json:"questions_answered" gorm:"default:0"`
+	CorrectAnswers    int        `json:"correct_answers" gorm:"default:0"`
+	CurrentStreak     int        `json:"current_streak" gorm:"default:0"`
+	BestStreak        int        `json:"best_streak" gorm:"default:0"`
+	HintsUsed         int        `json:"hints_used" gorm:"default:0"`
+	StartedAt         time.Time  `json:"started_at"`
+	CompletedAt       *time.Time `json:"completed_at"`
+	Player            Player     `json:"player" gorm:"foreignKey:PlayerID"`
 }
 
 // QuizAnswer представляє відповідь на питання

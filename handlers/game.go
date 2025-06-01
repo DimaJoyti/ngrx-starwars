@@ -150,19 +150,19 @@ func GetPlayerStats(c *gin.Context) {
 
 	// Обчислюємо додаткові метрики
 	response := gin.H{
-		"player_id":           stats.PlayerID,
-		"total_games_played":  stats.TotalGamesPlayed,
-		"total_score":         stats.TotalScore,
-		"best_score":          stats.BestScore,
-		"correct_answers":     stats.CorrectAnswers,
-		"total_questions":     stats.TotalQuestions,
-		"current_streak":      stats.CurrentStreak,
-		"best_streak":         stats.BestStreak,
-		"cards_collected":     stats.CardsCollected,
-		"battles_won":         stats.BattlesWon,
-		"battles_lost":        stats.BattlesLost,
-		"planets_visited":     stats.PlanetsVisited,
-		"artifacts_found":     stats.ArtifactsFound,
+		"player_id":          stats.PlayerID,
+		"total_games_played": stats.TotalGamesPlayed,
+		"total_score":        stats.TotalScore,
+		"best_score":         stats.BestScore,
+		"correct_answers":    stats.CorrectAnswers,
+		"total_questions":    stats.TotalQuestions,
+		"current_streak":     stats.CurrentStreak,
+		"best_streak":        stats.BestStreak,
+		"cards_collected":    stats.CardsCollected,
+		"battles_won":        stats.BattlesWon,
+		"battles_lost":       stats.BattlesLost,
+		"planets_visited":    stats.PlanetsVisited,
+		"artifacts_found":    stats.ArtifactsFound,
 	}
 
 	// Обчислюємо точність
@@ -211,7 +211,7 @@ func AddExperience(c *gin.Context) {
 
 	// Додаємо досвід
 	player.Experience += req.Experience
-	
+
 	// Обчислюємо новий рівень
 	newLevel := calculateLevel(player.Experience)
 	if newLevel > player.Level {

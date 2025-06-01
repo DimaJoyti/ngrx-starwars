@@ -34,6 +34,52 @@ func Initialize() {
 		&models.Organization{},
 		&models.Weapon{},
 		&models.Event{},
+		// Mission models
+		&models.Mission{},
+		&models.MissionObjective{},
+		&models.MissionProgress{},
+		&models.MissionTemplate{},
+		&models.MissionEvent{},
+		&models.MissionReward{},
+		&models.BrightDataMissionSync{},
+		// Game models (existing)
+		&models.Player{},
+		&models.PlayerStats{},
+		&models.QuizQuestion{},
+		&models.GameSession{},
+		&models.GameCard{},
+		&models.PlayerCard{},
+		&models.CardPack{},
+		&models.Battle{},
+		&models.Artifact{},
+		&models.PlayerArtifact{},
+		&models.Achievement{},
+		&models.PlayerAchievement{},
+		&models.QuizSession{},
+		&models.QuizAnswer{},
+		// New fleet models
+		&models.Ship{},
+		&models.Fleet{},
+		&models.ShipUpgrade{},
+		&models.Hangar{},
+		&models.ShipTemplate{},
+		// New battle models
+		&models.BattleParticipant{},
+		&models.BattleAction{},
+		&models.BattleResult{},
+		&models.BattleTemplate{},
+		// New resource models
+		&models.PlayerResources{},
+		&models.ResourceTransaction{},
+		&models.ResourceType{},
+		&models.ResourceConversion{},
+		&models.PlayerResourceGeneration{},
+		&models.ResourceBundle{},
+		// New achievement models
+		&models.AchievementProgress{},
+		&models.AchievementCategory{},
+		&models.AchievementReward{},
+		&models.AchievementLeaderboard{},
 	)
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
@@ -1059,4 +1105,10 @@ func seedData() {
 
 	// Seed quiz questions
 	SeedQuizQuestions()
+
+	// Seed missions
+	SeedMissions(DB)
+
+	// Seed game data
+	SeedGameData(DB)
 }
